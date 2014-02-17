@@ -27,8 +27,8 @@ function test() {
 [socket.io](http://socket.io/ "socket.io")
 
 ## Images & Videos
-NOTE: For additional images you can either use a relative link to an image on this repo or an absolute link to an externally hosted image.
 
 ![Example Image](project_images/cover.jpg?raw=true "Example Image")
+![First Sketch Image](project_images/IMG_1515_w.jpg?raw=true "First Sketch Image")
 
 https://www.youtube.com/watch?v=30yGOxJJ2PQ
