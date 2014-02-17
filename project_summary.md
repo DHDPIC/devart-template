@@ -21,7 +21,6 @@ function test() {
 }
 ```
 ## Links to External Libraries
- NOTE: You can also use this space to link to external libraries or Github repositories you used on your project.
 
 [three.js](http://threejs.org/ "three.js")
 [node.js](http://nodejs.org/ "node.js")
