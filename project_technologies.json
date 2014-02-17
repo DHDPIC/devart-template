@@ -1,16 +1,20 @@
 {
     "technologies": {
         "apis": [
-            "insert apis"
+            "WebSockets"
         ],
         "platforms": [
-            "insert platforms"
+            "Chrome for Android",
+            "Chrome for Desktop"
         ],
         "toolkits": [
-            "insert toolkits"
+            "WebGL",
+            "three.js",
+            "node.js",
+            "socket.io"
         ]
     },
     "themes": [
-        "insert themes"
+        "themes..."
     ]
 }
