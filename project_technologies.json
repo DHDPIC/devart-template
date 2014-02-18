@@ -9,9 +9,9 @@
         ],
         "toolkits": [
             "WebGL",
-            "three.js",
-            "node.js",
-            "socket.io"
+            "threejs",
+            "nodejs",
+            "socketio"
         ]
     },
     "themes": [
