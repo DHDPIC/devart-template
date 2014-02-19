@@ -13,5 +13,5 @@ Our first experiments managed to set this connection up and allow a phone to con
 
 
 ![First Sketch](../project_images/IMG_1515_w.jpg?raw=true "First Sketch")
-![Hello Devart](../project_images/IMG_1515_w.jpg?raw=true "Hello Devart")
-![Orientation Sphere](../project_images/IMG_1515_w.jpg?raw=true "Orientation Sphere")
+![Hello Devart](../project_images/IMG_1516_w.jpg?raw=true "Hello Devart")
+![Orientation Sphere](../project_images/IMG_1517_w.jpg?raw=true "Orientation Sphere")
