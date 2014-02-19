@@ -1,5 +1,3 @@
-What an exciting challenge, but not a lot of time to make something from scratch; but here goes...
-
 This feels like an ideal opportunity to explore some of the exciting technology we have been itching to play with and find a focused project for.
 
 ![First Sketch](../project_images/IMG_1515_w.jpg?raw=true "First Sketch")
