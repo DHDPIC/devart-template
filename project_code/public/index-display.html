@@ -3,29 +3,7 @@
 	<head>
 		<meta charset="utf-8" />
 		<title>devart sphere</title>
-		<style>
-			html, body {
-				height:100%;
-				margin:0;
-				padding:0;
-			}
-
-			#container {
-				background:#000;
-				height:100%;
-			}
-
-			canvas {
-				display:block;
-			}
-
-			#orientation {
-				position:fixed;
-				top:30px;
-				left:30px;
-				color:#ff0033;
-			}
-		</style>
+		<link type="text/css" rel="stylesheet" href="/css/display.css">
 	</head>
 	<body>
 		<div id="container"></div>
@@ -79,6 +57,53 @@
 			pos2.xyz += vel.xyz;*/
 
 			gl_FragColor = vec4(pos2.xyz, 1.0);
+		}
+	</script>
+
+	<script type="x-shader/x-vertex" id="vertexshader">
+		// switch on high precision floats
+		#ifdef GL_ES
+		precision highp float;
+		#endif
+
+		uniform sampler2D bumpTexture;
+		uniform float bumpScale;
+
+		varying float vAmount;
+		varying vec2 vUV;
+
+		varying vec3 vNormal;
+
+
+		void main()
+		{
+			vNormal = normal;
+			vUV = uv;
+			vec4 bumpData = texture2D(bumpTexture, uv);
+
+			vAmount = bumpData.r; // get the r channel for height
+			vec3 newPosition = position + normal * bumpScale * vAmount;
+			gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition,1.0);
+		}
+	</script>
+
+	<script type="x-shader/x-fragment" id="fragmentshader">
+		#ifdef GL_ES
+		precision highp float;
+		#endif
+
+		varying float vAmount;
+		varying vec2 vUV;
+
+		varying vec3 vNormal;
+
+		void main()
+		{
+			vec3 light = vec3(0.8,0.0,0.8);
+			light = normalize(light);
+			float dProd = max(0.0, dot(vNormal,light));
+			gl_FragColor 	= vec4(dProd/1.0,dProd/5.0,dProd/3.0,1.0);
+			//gl_FragColor = vec4(1.0,1.0,1.0,1.0);
 		}
 	</script>
 
