@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title></title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+	<script id="spherize" type="x-shader/x-fragment">
+		#define PI 3.1415926535897932384626433832795;
+		#define TWOPI = PI * 2;
+
+		uniform sampler2D uTexture;
+		uniform int width;
+		uniform int height;
+
+		varying vec2 vUv;
+
+		//http://www.blitzbasic.com/Community/posts.php?topic=63686
+
+		void main() {
+			float theta, phi, phi2;
+			int i, i2, j;
+			vec4 color;
+			vec2 uv;
+
+			theta = PI * (vUv.t - (height - 1) / 2.0) / (float)(height - 1);
+			phi = TWOPI * (vUv.s - width / 2.0) / (float)width;
+			phi2 = phi * cos(theta);
+			i2 = phi2 * width / TWOPI + width / 2;
+
+			if(i2 < 0 || i2 > width-1) {
+				color = vec4(1.0, 0.0, 0.0, 1.0);
+			}
+			else {
+				i = j * width + i2;
+				uv.s = (i % width) / width;
+				uv.t = floor(i / width) / height;
+				color = texture2D(uTexture, uv);
+			}
+
+			gl_FragColor = color;
+		}
+	</script>
+	<script src="../src/public/js/lib/jquery-1.11.0.js"></script>
+	<script src="../src/public/js/lib/d3.js"></script>
+	<script>
+		var $body = $('body');
+		var canvasInput = document.createElement('canvas');
+		var canvasOutput = document.createElement('canvas');
+		var inputContext = canvasInput.getContext('2d');
+		var outputContext = canvasOutput.getContext('2d');
+		var inputPixels, outputPixels;
+		var img = new Image();
+		var width, height;
+
+		img.addEventListener('load', onLoad);
+		img.src = '/img/test2.png';
+
+		function setCanvasDimensions(canvas, width, height) {
+			canvas.style.width = width + 'px';
+			canvas.style.height = height + 'px';
+			canvas.width = width;
+			canvas.height = height;
+		}
+
+		function onLoad() {
+			width = img.width;
+			height = img.height;
+			
+			setCanvasDimensions(canvasInput, width, height);
+			setCanvasDimensions(canvasOutput, width, height);
+
+			inputContext.drawImage(img, 0, 0, width, height);
+			inputPixels = inputContext.getImageData(0, 0, width, height);
+			outputPixels = outputContext.getImageData(0, 0, width, height);
+
+			doSphereMap();
+		}
+
+		function doSphereMap() {
+			var theta, phi, phi2;
+			var i, i2, j;
+			var inIndex, outIndex;
+
+			for(j=0; j<height; ++j) {
+				theta = Math.PI * (j - (height-1) / 2) / (height-1);
+
+				for(i=0; i<width; ++i) {
+					phi = (Math.PI * 2) * (i - width / 2) / width;
+					phi2 = phi * Math.cos(theta);
+					i2 = Math.round(phi2 * width / (Math.PI * 2) + width / 2);
+
+					outIndex = (j * width + i) * 4;
+
+					if(i2 < 0 || i2 > width-1) {
+						inIndex = -1;
+					}
+					else {
+						inIndex = (j * width + i2) * 4;
+					}
+
+					if(inIndex > -1) {
+						outputPixels.data[outIndex] = inputPixels.data[inIndex];
+						outputPixels.data[outIndex + 1] = inputPixels.data[inIndex + 1];
+						outputPixels.data[outIndex + 2] = inputPixels.data[inIndex + 2];
+						outputPixels.data[outIndex + 3] = inputPixels.data[inIndex + 3];
+					}
+					else {
+						outputPixels.data[outIndex] = 255;
+						outputPixels.data[outIndex + 1] = 0;
+						outputPixels.data[outIndex + 2] = 0;
+						outputPixels.data[outIndex + 3] = 255;
+					}
+				}
+			}
+
+			outputContext.putImageData(outputPixels, 0, 0);
+			var dataUrl = canvasOutput.toDataURL("image/png");
+
+			$body.append(canvasInput);
+			$body.append(canvasOutput);
+
+			var img = new Image();
+			img.src = dataUrl;
+
+			$body.append(img);
+		}
+	</script>
+</body>
+</html>
