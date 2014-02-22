@@ -1,7 +1,8 @@
 var $o = $('#orientation');
-$alpha = $o.find('.alpha');
-$beta = $o.find('.beta');
-$gamma = $o.find('.gamma');
+var $alpha = $o.find('.alpha');
+var $beta = $o.find('.beta');
+var $gamma = $o.find('.gamma');
+var $window = $(window);
 
 var socket = io.connect('http://' + config.server + ':' + config.port);
 socket.on('orientation', function (data) {
@@ -414,5 +415,13 @@ function update() {
   //
   requestAnimFrame(update);
 }
-//
+
+function onResize() {
+  renderer.setSize(window.innerWidth, window.innerHeight, true);
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+}
+
+$window.resize(onResize);
+
 requestAnimFrame(update);
