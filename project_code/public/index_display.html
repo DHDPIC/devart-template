@@ -38,11 +38,18 @@
         </p>
 
 	</body>
+
+	<!-- this file has been intentionally left out of git, it contains ip and port of the node server running index.html
+	var config = {
+	  server:'<IPADDRESS>',
+	  port:'<PORT>'
+	};
+	-->
+	<script src="/js/src/serverconfig.js"></script>
+
 	<script src="/js/lib/jquery-1.6.1.min.js"></script>
 	<script src="/js/lib/three.js"></script>
 	<script src="/js/lib/socket.io.js"></script>
-
-	
 
 	<script type="text/javascript">
 
@@ -51,7 +58,7 @@
 	$beta = $o.find('.beta');
 	$gamma = $o.find('.gamma');
 
-	var socket = io.connect('your server...');
+	var socket = io.connect('http://' + config.server + ':' + config.port);
   	socket.on('orientation', function (data) {
   	  //console.log(data);
   	  //

@@ -4,7 +4,7 @@ var $o = $('#orientation');
 var $aX, $aY, $aZ;
 var $agX, $agY, $agZ;
 var $alpha, $beta, $gamma;
-var socket = io.connect('http://82.196.5.49:3000');
+var socket = io.connect('http://' + config.server + ':' + config.port);
 var alpha = [];
 var beta = [];
 var gamma = [];
