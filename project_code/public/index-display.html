@@ -1,0 +1,100 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>devart sphere</title>
+		<style>
+			html,body {
+				width:100%;
+				height:100%;
+				margin:0;
+				padding:0;
+			}
+			#container {
+				background: #000;
+				width: 100%;
+				height: 100%;
+			}
+
+			#orientation {
+				position:fixed;
+				top: 30px;
+				left:30px;
+				color:#ff0033;
+			}
+		</style>
+	</head>
+	<body>
+
+		<div id="container">
+
+
+		</div>
+
+		<p id="orientation">Orientation<br>
+	        alpha: <span class="alpha"></span><br>
+	        beta: <span class="beta"></span><br>
+	        gamma: <span class="gamma"></span>
+        </p>
+
+	</body>
+
+	<script type="x-shader/x-vertex" id="textureGenerationVertex">
+		varying vec2 vUv;
+
+		void main() {
+			vUv = vec2(uv.s, uv.t);
+			gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+		}
+	</script>
+
+	<script type="x-shader/x-fragment" id="textureGenerationFragment">
+		uniform sampler2D tPosition1;
+		uniform sampler2D tPosition2;
+		uniform float time;
+		uniform float delta;
+
+		varying vec2 vUv;
+
+		float rand(vec2 n) {
+			return 0.5 + 0.5 * fract(sin(dot(n.xy, vec2(12.9898, 78.233))) * 43758.5453);
+		}
+
+		void main() {
+			vec4 pos1 = texture2D(tPosition1, vUv);
+			vec4 pos2 = texture2D(tPosition2, vUv);
+			/*vec3 vel;
+
+			float sec = floor(time);
+			float ms = floor((time - sec) * 1000.0);
+
+			if(pos2.y < -200.0) {
+				pos2.y = 200.0;
+				vel.y = 0.0;
+			}
+			else {
+				vel = pos2.xyz - pos1.xyz;
+				vel.y = min(vel.y, 0.0);
+			}
+
+			vel.y -= rand(vec2(sec, ms)) * 0.1;
+			pos2.xyz += vel.xyz;*/
+
+			gl_FragColor = vec4(pos2.xyz, 1.0);
+		}
+	</script>
+
+	<script src="/js/lib/jquery-1.6.1.min.js"></script>
+	<script src="/js/lib/three.js"></script>
+	<script src="/js/lib/socket.io.js"></script>
+
+	<!-- this file has been intentionally left out of git, it contains ip and port of the node server running index.html
+	var config = {
+	  server:'<IPADDRESS>',
+	  port:'<PORT>'
+	};
+	-->
+	<script src="/js/src/serverconfig.js"></script>
+
+	<script src="/js/src/display.js"></script>
+</html>
