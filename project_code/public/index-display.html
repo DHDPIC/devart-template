@@ -4,39 +4,37 @@
 		<meta charset="utf-8" />
 		<title>devart sphere</title>
 		<style>
-			html,body {
-				width:100%;
+			html, body {
 				height:100%;
 				margin:0;
 				padding:0;
 			}
+
 			#container {
-				background: #000;
-				width: 100%;
-				height: 100%;
+				background:#000;
+				height:100%;
+			}
+
+			canvas {
+				display:block;
 			}
 
 			#orientation {
 				position:fixed;
-				top: 30px;
+				top:30px;
 				left:30px;
 				color:#ff0033;
 			}
 		</style>
 	</head>
 	<body>
-
-		<div id="container">
-
-
-		</div>
+		<div id="container"></div>
 
 		<p id="orientation">Orientation<br>
 	        alpha: <span class="alpha"></span><br>
 	        beta: <span class="beta"></span><br>
 	        gamma: <span class="gamma"></span>
         </p>
-
 	</body>
 
 	<script type="x-shader/x-vertex" id="textureGenerationVertex">
