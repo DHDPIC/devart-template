@@ -25,38 +25,81 @@
 	</script>
 
 	<script type="x-shader/x-fragment" id="textureGenerationFragment">
-		uniform sampler2D tPosition1;
-		uniform sampler2D tPosition2;
-		uniform float time;
-		uniform float delta;
+		uniform sampler2D uDeviceInputTexture;
+		uniform sampler2D uSphereHeightMap1;
+		uniform float uTime;
+		uniform float uDelta;
+		uniform vec2 uResolution;
 
 		varying vec2 vUv;
 
-		float rand(vec2 n) {
-			return 0.5 + 0.5 * fract(sin(dot(n.xy, vec2(12.9898, 78.233))) * 43758.5453);
+		vec2 pixelCoords (vec2 texCoords, float width, float height) {
+			vec2 p = vec2(0.0, 0.0);
+			p.x = floor(texCoords.x / width);
+			p.y = floor(texCoords.y / height);
+
+			return p;
 		}
 
-		void main() {
-			vec4 pos1 = texture2D(tPosition1, vUv);
-			vec4 pos2 = texture2D(tPosition2, vUv);
-			/*vec3 vel;
+		vec2 texCoords (vec2 pixelCoords, float width, float height, float halfPixelWidth, float halfPixelHeight) {
+			vec2 t = vec2(0.0, 0.0);
+			t.x = pixelCoords.x / width;
+			t.y = pixelCoords.y / height;
 
-			float sec = floor(time);
-			float ms = floor((time - sec) * 1000.0);
+			return t;
+		}
 
-			if(pos2.y < -200.0) {
-				pos2.y = 200.0;
-				vel.y = 0.0;
+		float map (float value, float sMin, float sMax, float dMin, float dMax) {
+			return ((value / (sMax - sMin)) * (dMax - dMin)) + dMin;
+		}
+
+		void main () {
+			vec4 color;
+			vec4 data;
+			vec2 uv = vUv;
+
+			float width = uResolution.x;
+			float height = uResolution.y;
+			float pixelWidth = 1.0 / width;
+			float halfPixelWidth = pixelWidth * 0.5;
+			float pixelHeight = 1.0 / height;
+			float halfPixelHeight = pixelHeight * 0.5;
+			float alpha;
+			float beta;
+			float gamma;
+			float active;
+			float yp;
+			float tolerance = pixelHeight;
+			float diff;
+			float speed = 1.0;
+			float dy = pixelHeight;
+			vec2 tc;
+
+			if(vUv.t < (1.0 - dy)) {
+				uv.t = vUv.t + dy;
+				color = texture2D(uSphereHeightMap1, uv);
 			}
 			else {
-				vel = pos2.xyz - pos1.xyz;
-				vel.y = min(vel.y, 0.0);
+				// only testing 1st coord right now
+				//tc = texCoords (vec2(0.0, 0.0), width, height, halfPixelWidth, halfPixelHeight);
+				data = texture2D(uDeviceInputTexture, vec2(0.0, 1.0));
+				alpha = data.r;
+				beta = data.g;
+				gamma = data.b;
+				active = data.a;
+				yp = beta;
+
+				diff = vUv.s - yp;
+
+				if(active == 1.0 && abs(diff) < tolerance) {
+					color = vec4(1.0, 0.0, 0.0, 0.0);
+				}
+				else {
+					color = vec4(0.0, 0.0, 0.0, 1.0);
+				}
 			}
 
-			vel.y -= rand(vec2(sec, ms)) * 0.1;
-			pos2.xyz += vel.xyz;*/
-
-			gl_FragColor = vec4(pos2.xyz, 1.0);
+			gl_FragColor = color;
 		}
 	</script>
 
@@ -99,7 +142,7 @@
 
 		void main()
 		{
-			vec3 light = vec3(0.8,0.0,0.8);
+			vec3 light = vec3(0.5,0.8,0.0);
 			light = normalize(light);
 			float dProd = max(0.0, dot(vNormal,light));
 			gl_FragColor 	= vec4(dProd/1.0,dProd/5.0,dProd/3.0,1.0);
@@ -119,5 +162,6 @@
 	-->
 	<script src="/js/src/serverconfig.js"></script>
 
+	<script src="/js/src/FBOUtilities.js"></script>
 	<script src="/js/src/display.js"></script>
 </html>

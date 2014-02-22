@@ -9,6 +9,11 @@ var alpha = [];
 var beta = [];
 var gamma = [];
 var arrayLength = 20;
+var clientId;
+
+socket.on('connected', function (data) {
+  clientId = data;
+});
 
 $aX = $a.find('.x');
 $aY = $a.find('.y');
@@ -47,35 +52,42 @@ function throttle(callback) {
 }
 
 function getDegrees(list, currentValue) {
-  var deg;
-  var lastValue = list.length ? list[list.length-1] : currentValue;
-  var isLastNeg = (lastValue < 0);
-  var isCurrentNeg = (currentValue < 0);
+  return currentValue;
 
-  if(isLastNeg !== isCurrentNeg) {
-    list = [];
+  if(currentValue < 0) {
+    currentValue = currentValue + 360;
   }
 
-  list.push(currentValue);
-
-  if(list.length > arrayLength) {
-    list.shift();
-  }
-
-  var i = list.length;
-  var sum = 0;
-
-  while(--i > -1) {
-    sum += list[i];
-  }
-
-  deg = sum / list.length;
-
-  if(deg < 0) {
-    deg += 360;
-  }
-
-  return deg;
+  return currentValue;
+//  var deg;
+//  var lastValue = list.length ? list[list.length-1] : currentValue;
+//  var isLastNeg = (lastValue < 0);
+//  var isCurrentNeg = (currentValue < 0);
+//
+//  if(isLastNeg !== isCurrentNeg) {
+//    list = [];
+//  }
+//
+//  list.push(currentValue);
+//
+//  if(list.length > arrayLength) {
+//    list.shift();
+//  }
+//
+//  var i = list.length;
+//  var sum = 0;
+//
+//  while(--i > -1) {
+//    sum += list[i];
+//  }
+//
+//  deg = sum / list.length;
+//
+//  if(deg < 0) {
+//    deg += 360;
+//  }
+//
+//  return deg;
 }
 
 window.addEventListener('deviceorientation', function (e) {
@@ -95,7 +107,8 @@ window.addEventListener('deviceorientation', function (e) {
     socket.emit('orientation', {
       alpha: alphaDeg,
       beta: betaDeg,
-      gamma: gammaDeg
+      gamma: gammaDeg,
+      id: clientId
     });
   })
 });

@@ -1,3 +1,8 @@
+/**
+ * @class {FBOUtilities}
+ * @param {THREE.WebGLRenderer} renderer
+ * @constructor
+ */
 var FBOUtilities = function (renderer) {
   if(!renderer.context.getExtension("OES_texture_float")) {
     throw("Requires OES_texture_float extension");
@@ -63,7 +68,7 @@ var FBOUtilities = function (renderer) {
  * @param {number=} format
  * @returns {THREE.WebGLRenderTarget}
  */
-FBOUtilities.prototype.getFBO = function (width, height, format) {
+FBOUtilities.prototype.getFloatingPointFBO = function (width, height, format) {
   var FBO;
 
   height = typeof height != 'undefined' ? height : width;
@@ -112,11 +117,11 @@ FBOUtilities.prototype.generateFloatingPointTexture = function (data, width, hei
  * @param {number=} format
  * @returns {THREE.WebGLRenderTarget}
  */
-FBOUtilities.prototype.generateFBO = function (data, width, height, format) {
+FBOUtilities.prototype.generateFloatingPointFBO = function (data, width, height, format) {
   var texture = this.generateFloatingPointTexture(data, width, height, format);
-  var FBO = this.getFBO(width, height, format);
+  var FBO = this.getFloatingPointFBO(width, height, format);
 
-  this.renderTextureToFBO(FBO, texture);
+  this.renderDataTextureToFBO(FBO, texture);
 
   return FBO;
 };
@@ -130,14 +135,14 @@ FBOUtilities.prototype.generateFBO = function (data, width, height, format) {
  */
 FBOUtilities.prototype.renderDataToFBO = function (FBO, data, width, height, format) {
   var texture = this.generateFloatingPointTexture(data, width, height, format);
-  this.renderTextureToFBO(FBO, texture);
+  this.renderDataTextureToFBO(FBO, texture);
 };
 
 /**
  * @param {THREE.WebGLRenderTarget} FBO
  * @param {THREE.DataTexture} texture
  */
-FBOUtilities.prototype.renderTextureToFBO = function (FBO, texture) {
+FBOUtilities.prototype.renderDataTextureToFBO = function (FBO, texture) {
   this.quad.material = this.material;
   this.quad.material.uniforms.tDataTexture.value = texture;
   this.renderer.render(this.scene, this.camera, FBO, false);
@@ -155,7 +160,7 @@ FBOUtilities.prototype.renderShaderToFBO = function (FBO, material) {
 /**
  * @param {THREE.DataTexture} texture
  */
-FBOUtilities.prototype.renderTextureToScreen = function (texture) {
+FBOUtilities.prototype.renderDataTextureToScreen = function (texture) {
   this.quad.material = this.material;
   this.quad.material.uniforms.tDataTexture.value = texture;
   this.renderer.render(this.scene, this.camera, null, false);

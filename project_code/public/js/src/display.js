@@ -9,8 +9,22 @@ var Display = function () {
   this.renderer = null;
   this.camera = null;
   this.scene = null;
+
   this.ambientLight = null;
   this.pointLight = null;
+
+  this.sphere = null;
+  this.sphereMaterial = null;
+  this.shaderMaterial = null;
+
+  /**
+   * @type {FBOUtilities}
+   */
+  this.fboUtilities = null;
+  this.connectedDevices = [];
+  this.maxDevices = 0;
+  this.sphereHeightMap1 = null;
+  this.sphereHeightMap2 = null;
 
   this.phoneA = 0;
   this.phoneB = 0;
@@ -18,6 +32,10 @@ var Display = function () {
 
   this.frame = 0;
   this.counter = 20.0;
+  this.startTime = 0;
+  this.runningTime = 0;
+  this.delta = 0;
+  this.animating = true;
 
   this.texWidth = 64;
   this.texHeight = 64;
@@ -37,13 +55,18 @@ var Display = function () {
 
   this.setupListeners();
   this.setupScene();
+  this.setupFBO();
   this.initializeSocket();
+
+  this.startTime = performance.now();
+
   this.update();
 }
 
 Display.prototype.setupListeners = function () {
   $(document).on('mousemove', this.onMouseMove.bind(this));
   $(window).on('resize', this.onResize.bind(this));
+  $(document).on('keyup', this.onKeyUp.bind(this));
 }
 
 Display.prototype.setupScene = function () {
@@ -67,18 +90,20 @@ Display.prototype.setupScene = function () {
 
   this.scene.add(this.camera);
 
-  // texture the sphere
-  this.bumpTexture = this.createRandomTexture();//THREE.ImageUtils.loadTexture("img/map3.png");
-  this.bumpTexture.wrapS = this.bumpTexture.wrapT = THREE.RepeatWrapping;
-
   this.sphereMaterial = new THREE.MeshLambertMaterial({
     //color: 0xFF0066,
-    map: this.bumpTexture
+    map: null
   });
 
   this.uniforms = {
-    bumpTexture: { type: 't', value: this.bumpTexture },
-    bumpScale: { type: 'f', value: this.counter }
+    bumpTexture: {
+      type: 't',
+      value: null
+    },
+    bumpScale: {
+      type: 'f',
+      value: this.counter
+    }
   };
 
   this.shaderMaterial = new THREE.ShaderMaterial({
@@ -94,10 +119,63 @@ Display.prototype.setupScene = function () {
   this.scene.add(this.sphere);
 
   //this.sphere.rotation.x = 90.0*Math.PI/180;
+  this.sphere.rotation.y = -90.0*Math.PI/180;
   //this.sphere.rotation.z = 90.0*Math.PI/180; // COMMENT THIS OUT FOR PSYCHEDELIC EFFECTS!!!
 
   var plane = new THREE.Mesh(new THREE.PlaneGeometry(256,256), this.sphereMaterial);
   this.scene.add(plane);
+}
+
+Display.prototype.setupFBO = function () {
+  this.maxDevices = this.texWidth * this.texHeight;
+  this.fboUtilities = new FBOUtilities(this.renderer);
+
+  var len = this.maxDevices * 4;
+
+  this.aDeviceData = new Float32Array(len);
+
+  for(var i=0; i<len; i+=4) {
+    this.aDeviceData[i] = 0;
+    this.aDeviceData[i+1] = 0;
+    this.aDeviceData[i+2] = 0;
+    this.aDeviceData[i+3] = 0;
+  }
+
+  // TODO: try to make a one to one mapping of sphere vertices to pixels
+  this.sphereHeightMap1 = this.fboUtilities.getFloatingPointFBO(this.texWidth, this.texHeight);
+  this.sphereHeightMap2 = this.sphereHeightMap1.clone();
+
+  this.uniforms.bumpTexture.value = this.sphereHeightMap2;
+  this.sphereMaterial.map = this.sphereHeightMap2;
+
+  this.textureGenerationUniforms = {
+    uDeviceInputTexture: {
+      type: 't',
+      value: this.fboUtilities.generateFloatingPointTexture(this.aDeviceData, this.texWidth, this.texHeight, THREE.RGBAFormat)
+    },
+    uSphereHeightMap1: {
+      type: 't',
+      value: this.sphereHeightMap1
+    },
+    uDelta: {
+      type: 'f',
+      value: 0.0
+    },
+    uTime: {
+      type: 'f',
+      value: 0.0
+    },
+    uResolution: {
+      type: 'v2',
+      value: new THREE.Vector2(this.texWidth, this.texHeight)
+    }
+  };
+
+  this.textureGenerationShaderMaterial = new THREE.ShaderMaterial({
+    uniforms: this.textureGenerationUniforms,
+    vertexShader: $('#textureGenerationVertex').text(),
+    fragmentShader: $('#textureGenerationFragment').text()
+  });
 }
 
 Display.prototype.initializeSocket = function () {
@@ -105,14 +183,72 @@ Display.prototype.initializeSocket = function () {
   this.socket.on('orientation', this.onSocketOrientation.bind(this));
 }
 
+Display.prototype.onKeyUp = function (e) {
+  if(e.which === 32) {
+    this.toggleAnimation();
+  }
+}
+
+Display.prototype.toggleAnimation = function () {
+  if(!this.animating) {
+    this.animating = true;
+    this.startTime = performance.now();
+    this.update();
+  }
+  else {
+    this.animating = false;
+  }
+}
+
 Display.prototype.onSocketOrientation = function (data) {
+  var deviceDataIndex;
+
+  // TODO: add in initial connecting event, so we're not doing this every orientation event
+  this.addDevice(data.id);
+
+  deviceDataIndex = this.getDeviceDataArrayIndex(data.id);
+
   this.$alpha.text(data.alpha);
   this.$beta.text(data.beta);
   this.$gamma.text(data.gamma);
 
-  this.phoneA = data.alpha / 360 * 255;
-  this.phoneB = data.beta / 360 * 255;
-  this.phoneG = data.gamma / 360 * 255;
+  this.aDeviceData[deviceDataIndex] = (data.alpha / 360) + 0.5;
+  this.aDeviceData[deviceDataIndex + 1] = (data.beta / 360) + 0.5;
+  this.aDeviceData[deviceDataIndex + 2] = (data.gamma / 360) + 0.5;
+  this.aDeviceData[deviceDataIndex + 3] = 1.0;
+}
+
+Display.prototype.addDevice = function (deviceId) {
+  if(this.connectedDevices.indexOf(deviceId) > -1) {
+    return
+  }
+
+  var len = this.connectedDevices.length;
+  var id;
+  var added = false;
+
+  for(var i=0; i<len; ++i) {
+    id = this.connectedDevices[i];
+
+    if(id === null) {
+      this.connectedDevices[i] = deviceId;
+      added = true;
+      break;
+    }
+  }
+
+  if(!added) {
+    if(len < this.maxDevices) {
+      this.connectedDevices.push(deviceId);
+    }
+    else {
+      // TODO: send message back to device if no room
+    }
+  }
+}
+
+Display.prototype.getDeviceDataArrayIndex = function (deviceId) {
+  return this.connectedDevices.indexOf(deviceId) * 4;
 }
 
 Display.prototype.onMouseMove = function (e) {
@@ -124,13 +260,20 @@ Display.prototype.onResize = function (e) {
   this.width = window.innerWidth;
   this.height = window.innerHeight;
   this.aspect = this.width / this.height;
-  
+
   this.renderer.setSize(this.width, this.height, true);
   this.camera.aspect = this.aspect;
   this.camera.updateProjectionMatrix();
 }
 
 Display.prototype.update = function () {
+
+  var time = performance.now();
+  var runningTime = time - this.startTime;
+
+  this.delta = runningTime - this.runningTime;
+  this.runningTime = runningTime;
+
   //
   if(this.frame % 20 == 0) {
     //this.bumpTexture = addGradTexture();
@@ -144,9 +287,20 @@ Display.prototype.update = function () {
   //
   ++this.frame;
   //
-  this.bumpTexture = this.scrollTexture();
-  this.uniforms.bumpTexture.value = this.bumpTexture;
-  this.sphereMaterial.map = this.bumpTexture;
+  //this.bumpTexture = this.scrollTexture();
+  //this.uniforms.bumpTexture.value = this.bumpTexture;
+  //this.sphereMaterial.map = this.bumpTexture;
+
+  this.textureGenerationUniforms.uDeviceInputTexture.value = this.fboUtilities.generateFloatingPointTexture(this.aDeviceData, this.texWidth, this.texHeight, THREE.RGBAFormat);
+  this.textureGenerationUniforms.uSphereHeightMap1.value = this.sphereHeightMap1;
+  this.textureGenerationUniforms.uTime.value = this.runningTime * 0.001;
+  this.textureGenerationUniforms.uDelta.value = this.delta * 0.001;
+  this.fboUtilities.renderShaderToFBO(this.sphereHeightMap2, this.textureGenerationShaderMaterial);
+
+  //this.fboUtilities.renderDataTextureToScreen(this.textureGenerationUniforms.uDeviceInputTexture.value);
+
+  this.uniforms.bumpTexture.value = this.sphereHeightMap2;
+  this.sphereMaterial.map = this.sphereHeightMap2;
   //
   /*
    this.sphere.rotation.x += 0.01;
@@ -156,7 +310,18 @@ Display.prototype.update = function () {
   //
   this.renderer.render(this.scene, this.camera);
 
-  requestAnimationFrame(this.update.bind(this));
+  this.swapHeightMaps();
+
+  if(this.animating) {
+    requestAnimationFrame(this.update.bind(this));
+  }
+}
+
+Display.prototype.swapHeightMaps = function () {
+  var temp = this.sphereHeightMap1;
+
+  this.sphereHeightMap1 = this.sphereHeightMap2;
+  this.sphereHeightMap2 = temp;
 }
 
 Display.prototype.createTexture = function () {
