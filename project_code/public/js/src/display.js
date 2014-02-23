@@ -103,6 +103,10 @@ Display.prototype.setupScene = function () {
     bumpScale: {
       type: 'f',
       value: this.counter
+    },
+    uTime: {
+      type: 'f',
+      value: 0.0
     }
   };
 
@@ -220,7 +224,7 @@ Display.prototype.onSocketOrientation = function (data) {
 
 Display.prototype.addDevice = function (deviceId) {
   if(this.connectedDevices.indexOf(deviceId) > -1) {
-    return
+    return;
   }
 
   var len = this.connectedDevices.length;
@@ -295,10 +299,12 @@ Display.prototype.update = function () {
   this.textureGenerationUniforms.uSphereHeightMap1.value = this.sphereHeightMap1;
   this.textureGenerationUniforms.uTime.value = this.runningTime * 0.001;
   this.textureGenerationUniforms.uDelta.value = this.delta * 0.001;
+
   this.fboUtilities.renderShaderToFBO(this.sphereHeightMap2, this.textureGenerationShaderMaterial);
 
   //this.fboUtilities.renderDataTextureToScreen(this.textureGenerationUniforms.uDeviceInputTexture.value);
 
+  this.uniforms.uTime.value = this.runningTime * 0.001;
   this.uniforms.bumpTexture.value = this.sphereHeightMap2;
   this.sphereMaterial.map = this.sphereHeightMap2;
   //
