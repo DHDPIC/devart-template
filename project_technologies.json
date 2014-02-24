@@ -4,14 +4,20 @@
             "WebSockets"
         ],
         "platforms": [
-            "Chrome for Android",
-            "Chrome for Desktop"
+            "Android",
+            "Arduino"
         ],
         "toolkits": [
             "WebGL",
             "threejs",
             "nodejs",
-            "socketio"
+            "socketio",
+        ],
+        "languages": [
+        "html",
+        "css",
+        "javascript",
+        "arduino"
         ]
     },
     "themes": [
