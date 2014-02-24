@@ -12,7 +12,7 @@ We made numerous experiments with dynamically creating textures, using algorithm
 
 The latest tests take phone accelerometer data to draw a line along a scrolling texture. This leaves a trail where the user has 'been', with multiple users there would be multiple trails across the sphere surface. The generated texture is used by the vertex shader to manipulate the surface of the sphere. Here is a video showing the interaction between phone and sphere:
 
-http://youtu.be/9OfsLbkoTkM
+<iframe width="500" height="315" src="//www.youtube.com/embed/9OfsLbkoTkM" frameborder="0" allowfullscreen></iframe>
 
 Our installation is concerned with the contradiction of mobile devices that encourage a user to interact with other people, but so often not with those who they share a space with. How often do we see people sat next to each other not talking as they are checking something on their phones. They provide a screen to look at instead of seeing what is actually around you, a portal to distract you from your current situation. Yet phones and tablets do offer a powerful tool to augment interaction between people in the same space. We want to use this to create expressive and dynamic output. We need to consider carefully how a visitor to the exhibition can use their device as a tool but with the minimum of fuss and doesn't force them to look at their phone too much and distract them from the main display.
 
