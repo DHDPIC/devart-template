@@ -1,6 +1,6 @@
-Modifiable Landscape
+Dynamic Physical Landscape
 
-So we want to create a landscape/terrain where we can dynamically change the height of bits of it based on data we receive.
+So we want to create a physical landscape where we can dynamically change the physical height of the terrain based on data we receive from devices of users at the exhibition.
 
 We need:
 a grid of servo motors
