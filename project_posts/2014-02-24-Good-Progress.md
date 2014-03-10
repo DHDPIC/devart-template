@@ -4,7 +4,6 @@ Our idea is starting to take form and coming to life with some great tests in co
 
 We made numerous experiments with dynamically creating textures, using algorithms and input sent from a mobile device via nodes, to generate lines and areas of gradients.These textures are all created in HTML5 Canvas using Javascript. Textures can be used to colour any shapes we make in WebGL, but also used to modify the actual form of the shape using a vertex shader. You can see grabs of some of the textures below.
 
-![Texture_1](../project_images/sphere_texture_01.jpg?raw=true "Texture_1")
 ![Texture_2](../project_images/random_texture.jpg?raw=true "Texture_2")
 ![Texture_3](../project_images/scrolling_colour_texture.jpg?raw=true "Texture_3")
 ![Texture_4](../project_images/sphere_texture_trail_01.jpg?raw=true "Texture_4")
