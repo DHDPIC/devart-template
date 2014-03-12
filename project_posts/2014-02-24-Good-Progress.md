@@ -4,9 +4,16 @@ Our idea is starting to take form and coming to life with some great tests in co
 
 We made numerous experiments with dynamically creating textures, using algorithms and input sent from a mobile device via nodes, to generate lines and areas of gradients.These textures are all created in HTML5 Canvas using Javascript. Textures can be used to colour any shapes we make in WebGL, but also used to modify the actual form of the shape using a vertex shader. You can see grabs of some of the textures below.
 
+Creating random textures of lines and gradients
 ![Texture_2](../project_images/random_texture.jpg?raw=true "Texture_2")
+
+Bands of colours are created by mouse position on the screen
 ![Texture_3](../project_images/scrolling_colour_texture.jpg?raw=true "Texture_3")
+
+A line is drawn using accelerometer data
 ![Texture_4](../project_images/sphere_texture_trail_01.jpg?raw=true "Texture_4")
+
+This is then used to modify the vertices of the sphere
 ![Texture_5](../project_images/sphere_texture_trail_02.jpg?raw=true "Texture_5")
 
 The latest tests take phone accelerometer data to draw a line along a scrolling texture. This leaves a trail where the user has 'been', with multiple users there would be multiple trails across the sphere surface. The generated texture is used by the vertex shader to manipulate the surface of the sphere. Here is a video showing the interaction between phone and sphere: 
