@@ -11,15 +11,7 @@ Exploring combined group user interaction using mobile device capabilities to cr
 ## Link to Prototype
 NOTE: If your project lives online you can add one or more links here. Make sure you have a stable version of your project running before linking it.
 
-[Example Link](http://www.google.com "Example Link")
 
-## Example Code
-NOTE: Wrap your code blocks or any code citation by using ``` like the example below.
-```
-function test() {
-  console.log("Printing a test");
-}
-```
 ## Links to External Libraries
 
 [three.js](http://threejs.org/ "three.js")
@@ -33,4 +25,3 @@ function test() {
 ![Mobile Orientation Test Image](project_images/IMG_1516_w.jpg?raw=true "Mobile Orientation Test Image")
 ![WebGL Sphere Orientation Test Image](project_images/IMG_1517_w.jpg?raw=true "WebGL Sphere Orientation Test Image")
 
-https://www.youtube.com/watch?v=30yGOxJJ2PQ
