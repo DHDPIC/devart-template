@@ -1,4 +1,4 @@
-A lot of goodies arrived in the post!
+A lot of goodies arrived in the post! This is all for testing how to build a dynamic landscape that can be interacted with to modify the landscape realtime.
 
 Adafruit PWM shield
 
