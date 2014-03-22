@@ -267,10 +267,10 @@
 
 		void main()
 		{
-			vec3 light = vec3(0.5,0.8,0.0);
+			vec3 light = vec3(0.9,0.2,0.0); //vec3(0.5,0.8,0.0);
 			light = normalize(light);
 			float dProd = max(0.0, dot(vNormal,light));
-			gl_FragColor 	= vec4(dProd/1.0,dProd/5.0,dProd/3.0,1.0);
+			gl_FragColor 	= vec4(0.619607843*dProd,0.733333333*dProd,0.725490196*dProd,1.0); // vec4(dProd/1.0,dProd/5.0,dProd/3.0,1.0);
 			//gl_FragColor = vec4(1.0,1.0,1.0,1.0);
 		}
 	</script>

@@ -116,13 +116,14 @@ Display.prototype.setupScene = function () {
     fragmentShader: $('#fragmentshader').text()
   });
 
-  var radius = 80, segments = 128, rings = 128;
+  var radius = 240, segments = 256, rings = 256;
   var geometry = new THREE.SphereGeometry(radius, segments, rings);
 
   this.sphere = new THREE.Mesh(geometry, this.shaderMaterial);
   this.scene.add(this.sphere);
 
   //this.sphere.rotation.x = 90.0*Math.PI/180;
+  this.sphere.position.y = -240;
   this.sphere.rotation.y = -90.0*Math.PI/180;
   //this.sphere.rotation.z = 90.0*Math.PI/180; // COMMENT THIS OUT FOR PSYCHEDELIC EFFECTS!!!
 
