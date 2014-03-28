@@ -5,6 +5,8 @@
         ],
         "platforms": [
             "Android",
+	        "Chrome for Desktop",
+	        "Chrome for Android",
             "Arduino"
         ],
         "toolkits": [
