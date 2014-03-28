@@ -12,12 +12,10 @@
             "threejs",
             "nodejs",
             "socketio",
-        ],
-        "languages": [
-        "html",
-        "css",
-        "javascript",
-        "arduino"
+            "html",
+            "css",
+            "javascript",
+            "arduino"
         ]
     },
     "themes": [
